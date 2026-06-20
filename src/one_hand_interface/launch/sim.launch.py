@@ -1,5 +1,5 @@
 import os
-
+import launch
 from launch import LaunchDescription
 from launch.actions import DeclareLaunchArgument, OpaqueFunction
 from launch.substitutions import Command, FindExecutable, LaunchConfiguration, PathJoinSubstitution
@@ -64,11 +64,28 @@ def launch_setup(context, *args, **kwargs):
             )
         )
 
+    rviz_config_file = PathJoinSubstitution([pkg_share, "rviz", "view_robot.rviz"])
+
+    # RViz node
+    nodes.append(
+        Node(
+            package="rviz2",
+            executable="rviz2",
+            name="rviz2",
+            output="log",
+            arguments=["-d", rviz_config_file],
+            condition=launch.conditions.IfCondition(LaunchConfiguration("rviz")),
+        )
+    )
+
     return nodes
 
 def generate_launch_description():
     return LaunchDescription(
         [
+            DeclareLaunchArgument(
+                "rviz", default_value="true", description="Start RViz2 automatically with this launch file."
+            ),
             OpaqueFunction(function=launch_setup),
         ]
     )

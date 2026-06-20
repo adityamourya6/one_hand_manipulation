@@ -14,6 +14,7 @@ setup(
         ('share/' + package_name, ['package.xml']),
         (os.path.join('share', package_name, 'launch'), glob('launch/*.py')),
         (os.path.join('share', package_name, 'urdf'), glob('urdf/*.xacro')),
+        (os.path.join('share', package_name, 'rviz'), glob('rviz/*.rviz')),
     ] + [(os.path.join('share', package_name, root), [os.path.join(root, f) for f in files]) 
          for root, _, files in os.walk('config')],
     install_requires=['setuptools'],
