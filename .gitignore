@@ -1,0 +1,29 @@
+# Ignore ROS 2 build directories
+build/
+install/
+log/
+
+# Ignore Python caches
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Ignore virtual environments
+.venv/
+venv/
+ENV/
+env/
+.env
+
+# Ignore IDE config files
+.vscode/
+.idea/
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
