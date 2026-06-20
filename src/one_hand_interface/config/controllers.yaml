@@ -8,6 +8,15 @@ controller_manager:
     fer_arm_controller:
       type: joint_trajectory_controller/JointTrajectoryController
 
+    fer_gripper_controller:
+      type: forward_command_controller/ForwardCommandController
+
+fer_gripper_controller:
+  ros__parameters:
+    joints:
+      - fer_finger_joint1
+    interface_name: position
+
 fer_arm_controller:
   ros__parameters:
     command_interfaces:

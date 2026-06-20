@@ -20,34 +20,14 @@
         <material name="sponge_mat" rgba="0.9 0.9 0.1 1"/>
     </asset>
 
-    <worldbody>
-        <geom name="floor" size="0 0 0.05" type="plane" material="groundplane"/>
-        
-        <!-- Table -->
-        <body name="table" pos="0.5 0 0.2">
-            <!-- Table top height is 0.4m (0.2 pos + 0.2 size)-->
-            <geom name="table_top" type="box" size="0.4 0.6 0.025" pos="0 0 0.2" material="table_mat"/>
-            <geom name="table_leg1" type="box" size="0.025 0.025 0.1" pos="0.35 0.55 0.1" material="table_mat"/>
-            <geom name="table_leg2" type="box" size="0.025 0.025 0.1" pos="-0.35 0.55 0.1" material="table_mat"/>
-            <geom name="table_leg3" type="box" size="0.025 0.025 0.1" pos="0.35 -0.55 0.1" material="table_mat"/>
-            <geom name="table_leg4" type="box" size="0.025 0.025 0.1" pos="-0.35 -0.55 0.1" material="table_mat"/>
-        </body>
+    <include file="robosuite_assets/table_arena.xml"/>
 
-        <!-- Objects on the table -->
-        <!-- Table top surface is at z=0.425 -->
-        <body name="cup" pos="0.5 0.2 0.475">
-            <freejoint/>
-            <geom name="cup_geom" type="box" size="0.04 0.04 0.05" material="cup_mat" mass="0.2"/>
-        </body>
-        
-        <body name="bowl" pos="0.6 -0.1 0.445">
-            <freejoint/>
-            <geom name="bowl_geom" type="cylinder" size="0.08 0.02" material="bowl_mat" mass="0.3"/>
-        </body>
-        
-        <body name="sponge" pos="0.4 0.0 0.435">
-            <freejoint/>
-            <geom name="sponge_geom" type="box" size="0.06 0.04 0.01" material="sponge_mat" mass="0.05"/>
-        </body>
+    <worldbody>
+        <!-- High fidelity scanned objects -->
+        <include file="objects/Brisk_Iced_Tea_Lemon_12_12_fl_oz_355_ml_cans_144_fl_oz_426_lt/prefixed.xml"/>
+        <include file="objects/Chefmate_8_Frypan/prefixed.xml"/>
+        <include file="objects/Little_Debbie_Donut_Sticks_6_cake_donuts_10_oz_total/prefixed.xml"/>
+        <include file="objects/Nescafe_Tasters_Choice_Instant_Coffee_Decaf_House_Blend_Light_7_oz/prefixed.xml"/>
+        <include file="objects/Room_Essentials_Mug_White_Yellow/prefixed.xml"/>
     </worldbody>
 </mujoco>
