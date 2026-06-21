@@ -34,9 +34,15 @@ We will run a series of tests to guarantee the physics and controllers are trust
 - All 8 high-fidelity objects (donut, pan, brisk_tea, etc.) successfully spawn and fall onto the table/stove.
 
 **✅ 2. Collision & Mass Property Test:**
-- **Method:** A 10kg red box (`heavy_collision_test`) was spawned at `Z=1.5m` directly above the robot arm with a `<freejoint/>` so it falls freely under gravity and physically strikes the arm links.
+- **Method:** A 10kg red box (`heavy_collision_test`) is defined in a separate scene file `kitchen_scene_collision_test.xml`. It is spawned only when explicitly requested via the `collision_test:=true` launch argument — it does **not** appear in the normal simulation.
+- **Command to trigger (on-demand):**
+  ```bash
+  ros2 launch one_hand_interface sim.launch.py collision_test:=true
+  ```
+  The red box will immediately begin falling from `Z=1.5m` and strike the robot arm, visually confirming rigid body collisions.
 - **Result:** Objects exhibit correct gravity acceleration and cleanly collide with the arm and countertops without clipping or exploding. Inertial singularities (`mjMINVAL`) were successfully patched.
 - **Crash Note:** First attempt crashed because `mass` was set inside `<geom>` instead of `<inertial>`. Fix: always pair `<freejoint/>` bodies with explicit `<inertial>` tags. Documented in `mujoco_crash_postmortem.md`.
+
 
 **✅ 3. Gripper Actuation Test:**
 - **Gripper OPEN:**

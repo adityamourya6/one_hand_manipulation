@@ -6,9 +6,18 @@ from launch.substitutions import Command, FindExecutable, LaunchConfiguration, P
 from launch_ros.actions import Node
 from launch_ros.parameter_descriptions import ParameterValue, ParameterFile
 from launch_ros.substitutions import FindPackageShare
+from ament_index_python.packages import get_package_share_directory
 
 def launch_setup(context, *args, **kwargs):
     pkg_share = FindPackageShare("one_hand_interface")
+    pkg_share_dir = get_package_share_directory("one_hand_interface")
+
+    # Select scene file based on collision_test argument
+    collision_test = LaunchConfiguration("collision_test").perform(context)
+    if collision_test.lower() in ("true", "1", "yes"):
+        scene_file = os.path.join(pkg_share_dir, "config", "kitchen_scene_collision_test.xml")
+    else:
+        scene_file = os.path.join(pkg_share_dir, "config", "kitchen_scene.xml")
 
     robot_description_content = Command(
         [
@@ -44,6 +53,7 @@ def launch_setup(context, *args, **kwargs):
             parameters=[
                 robot_description,
                 {"use_sim_time": True},
+                {"mujoco_model": scene_file},
                 ParameterFile(parameters_file),
             ],
             remappings=[
@@ -85,6 +95,10 @@ def generate_launch_description():
         [
             DeclareLaunchArgument(
                 "rviz", default_value="true", description="Start RViz2 automatically with this launch file."
+            ),
+            DeclareLaunchArgument(
+                "collision_test", default_value="false",
+                description="Launch with a 10kg falling box above the robot arm to verify rigid body collisions."
             ),
             OpaqueFunction(function=launch_setup),
         ]
