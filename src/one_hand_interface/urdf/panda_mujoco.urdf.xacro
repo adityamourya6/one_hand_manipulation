@@ -4,6 +4,12 @@
   <!-- Include the base Franka description but without ros2_control to avoid conflicts -->
   <!-- Note: we use fer (Franka Emika Robot) instead of panda because in version 2.7.0 
        the original Panda is called fer. -->
+  <link name="world"/>
+  <joint name="world_to_base" type="fixed">
+    <origin xyz="-0.25 0 0.40" rpy="0 0 0"/>
+    <parent link="world"/>
+    <child link="base"/>
+  </joint>
   <xacro:include filename="$(find franka_description)/robots/fer/fer.urdf.xacro" />
   
   <!-- Add our own ros2_control configuration for mujoco_ros2_control -->

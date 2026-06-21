@@ -1,0 +1,9 @@
+<mujoco>
+  <include file="Chef_Knife.xml"/>
+  <worldbody>
+    <body name="chef_knife_model" pos="0.5 0.3 0.85">
+      <freejoint/>
+      <geom class="Chef_Knife"/>
+    </body>
+  </worldbody>
+</mujoco>

@@ -1,5 +1,5 @@
 <mujoco model="kitchen_scene">
-    <include file="mujoco_assets/panda.xml"/>
+    <include file="panda.xml"/>
 
     <statistic center="0 0 0.5" extent="2"/>
 
@@ -9,45 +9,26 @@
         <global azimuth="120" elevation="-20"/>
     </visual>
 
+    <include file="k/kitchen.xml"/>
+
     <asset>
-        <texture type="skybox" builtin="gradient" rgb1="0.3 0.5 0.7" rgb2="0 0 0" width="512" height="3072"/>
-        <texture type="2d" name="groundplane" builtin="checker" mark="edge" rgb1="0.2 0.3 0.4" rgb2="0.1 0.2 0.3"
-                 markrgb="0.8 0.8 0.8" width="300" height="300"/>
+        <texture type="2d" name="groundplane" builtin="checker" mark="edge" rgb1="0.2 0.3 0.4" rgb2="0.1 0.2 0.3" markrgb="0.8 0.8 0.8" width="300" height="300"/>
         <material name="groundplane" texture="groundplane" texuniform="true" texrepeat="5 5" reflectance="0.2"/>
-        <material name="table_mat" rgba="0.6 0.4 0.2 1"/>
-        <material name="cup_mat" rgba="0.8 0.1 0.1 1"/>
-        <material name="bowl_mat" rgba="0.1 0.3 0.8 1"/>
-        <material name="sponge_mat" rgba="0.9 0.9 0.1 1"/>
     </asset>
 
     <worldbody>
-        <geom name="floor" size="0 0 0.05" type="plane" material="groundplane"/>
-        
-        <!-- Table -->
-        <body name="table" pos="0.5 0 0.2">
-            <!-- Table top height is 0.4m (0.2 pos + 0.2 size)-->
-            <geom name="table_top" type="box" size="0.4 0.6 0.025" pos="0 0 0.2" material="table_mat"/>
-            <geom name="table_leg1" type="box" size="0.025 0.025 0.1" pos="0.35 0.55 0.1" material="table_mat"/>
-            <geom name="table_leg2" type="box" size="0.025 0.025 0.1" pos="-0.35 0.55 0.1" material="table_mat"/>
-            <geom name="table_leg3" type="box" size="0.025 0.025 0.1" pos="0.35 -0.55 0.1" material="table_mat"/>
-            <geom name="table_leg4" type="box" size="0.025 0.025 0.1" pos="-0.35 -0.55 0.1" material="table_mat"/>
-        </body>
-
-        <!-- Objects on the table -->
-        <!-- Table top surface is at z=0.425 -->
-        <body name="cup" pos="0.5 0.2 0.475">
-            <freejoint/>
-            <geom name="cup_geom" type="box" size="0.04 0.04 0.05" material="cup_mat" mass="0.2"/>
-        </body>
-        
-        <body name="bowl" pos="0.6 -0.1 0.445">
-            <freejoint/>
-            <geom name="bowl_geom" type="cylinder" size="0.08 0.02" material="bowl_mat" mass="0.3"/>
-        </body>
-        
-        <body name="sponge" pos="0.4 0.0 0.435">
-            <freejoint/>
-            <geom name="sponge_geom" type="box" size="0.06 0.04 0.01" material="sponge_mat" mass="0.05"/>
-        </body>
+        <light pos="0 0 3" dir="0 0 -1" directional="true"/>
+        <geom name="floor" pos="0 0 -0.85" size="0 0 0.05" type="plane" material="groundplane" contype="1" conaffinity="1"/>
+        <geom name="pedestal" pos="-0.25 0 -0.225" size="0.1 0.1 0.625" type="box" rgba="0.2 0.2 0.2 1" contype="1" conaffinity="1"/>
     </worldbody>
+    <!-- High fidelity scanned objects -->
+    <include file="o/brisk_tea/prefixed.xml"/>
+    <include file="o/frypan/prefixed.xml"/>
+    <include file="o/donut/prefixed.xml"/>
+    <include file="o/coffee/prefixed.xml"/>
+    <include file="o/mug/prefixed.xml"/>
+    <include file="o/robosuite_objects/cereal.xml"/>
+    <include file="o/robosuite_objects/milk.xml"/>
+    <include file="o/robosuite_objects/bread.xml"/>
+
 </mujoco>

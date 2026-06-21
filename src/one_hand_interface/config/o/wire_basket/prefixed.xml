@@ -1,0 +1,9 @@
+<mujoco>
+  <include file="Wire_Basket.xml"/>
+  <worldbody>
+    <body name="wire_basket_model" pos="0.5 0.3 0.85">
+      <freejoint/>
+      <geom class="Wire_Basket"/>
+    </body>
+  </worldbody>
+</mujoco>
