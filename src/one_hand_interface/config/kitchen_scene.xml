@@ -20,6 +20,13 @@
         <light pos="0 0 3" dir="0 0 -1" directional="true"/>
         <geom name="floor" pos="0 0 -0.85" size="0 0 0.05" type="plane" material="groundplane" contype="1" conaffinity="1"/>
         <geom name="pedestal" pos="-0.25 0 -0.225" size="0.1 0.1 0.625" type="box" rgba="0.2 0.2 0.2 1" contype="1" conaffinity="1"/>
+        
+        <!-- Verification Heavy Box (falls onto the arm to test collisions) -->
+        <body name="heavy_collision_test" pos="-0.25 0.0 1.5">
+            <freejoint/>
+            <inertial mass="10.0" pos="0 0 0" diaginertia="0.1 0.1 0.1"/>
+            <geom type="box" size="0.15 0.15 0.15" rgba="0.9 0.1 0.1 1" contype="1" conaffinity="1"/>
+        </body>
     </worldbody>
     <!-- High fidelity scanned objects -->
     <include file="o/brisk_tea/prefixed.xml"/>

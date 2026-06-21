@@ -67,3 +67,30 @@ MuJoCo logged the error: `Error: mass and inertia of moving bodies must be large
 ### 3. Nested Freejoint Error
 MuJoCo logged the error: `Error: free joint can only be used on top level`. The `robosuite` object XMLs had their main body tag wrapped inside an extra unnamed `<body>` tag. A `<freejoint/>` mathematically defines an object's relationship to the root world coordinate system and cannot be buried inside sub-bodies.
 **Fix:** Stripped out the wrapper `<body>` tags so that the object body and its freejoint became direct descendants of the `<worldbody>`.
+
+## Crash: Verification Heavy Box Missing Explicit Inertia
+**Date:** 2026-06-21  
+**Trigger:** Added a `<freejoint/>` body (`heavy_collision_test`) for collision verification testing without explicit inertia.
+
+### Root Cause
+MuJoCo requires that all **moving bodies** (bodies with joints, including freejoints) have valid mass and inertia values greater than `mjMINVAL` (~1e-14). When only `mass` is set inside a `<geom>` tag (not inside `<inertial>`), MuJoCo cannot auto-compute the inertia tensor for a `freejoint` body and throws:
+
+```
+Error: mass and inertia of moving bodies must be larger than mjMINVAL
+failed to load the model
+```
+
+The process then exits with signal `-11` (SIGSEGV) as the controller manager tries to access a null physics world pointer.
+
+### Fix
+Moved mass declaration out of the `<geom>` and added an explicit `<inertial>` tag:
+```xml
+<body name="heavy_collision_test" pos="-0.25 0.0 1.5">
+    <freejoint/>
+    <inertial mass="10.0" pos="0 0 0" diaginertia="0.1 0.1 0.1"/>
+    <geom type="box" size="0.15 0.15 0.15" rgba="0.9 0.1 0.1 1" contype="1" conaffinity="1"/>
+</body>
+```
+
+### Key Rule
+**Always** pair `<freejoint/>` with an explicit `<inertial>` tag. Never rely on geom-level mass for dynamically simulated bodies.

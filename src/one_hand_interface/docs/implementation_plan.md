@@ -27,8 +27,72 @@ We will run a series of tests to guarantee the physics and controllers are trust
 - **Joint Limit Test:** We will command the arm to exceed its physical limits (`2.8973` radians) to verify that MuJoCo mathematically blocks the movement, ensuring our safety constraints work.
 - **Actuation Test:** We will send a manual ROS command via the terminal to physically open and close the gripper.
 
-## Verification Plan
-1. Run `ros2 launch one_hand_interface sim.launch.py`.
-2. Visually confirm the new professional, confined environment is loaded and textured correctly.
-3. Observe the Collision Test (falling objects).
-4. Run `ros2 topic pub` commands in the terminal to trigger the Joint Limit and Gripper Actuation tests.
+## Verification Plan & Results
+
+**✅ 1. Professional Environment Integration:**
+- Verified the kitchen assets load successfully. The true height of the counters was calibrated to 1.57m, and the robot pedestal was resized to exactly 1.25m to match.
+- All 8 high-fidelity objects (donut, pan, brisk_tea, etc.) successfully spawn and fall onto the table/stove.
+
+**✅ 2. Collision & Mass Property Test:**
+- **Method:** A 10kg red box (`heavy_collision_test`) was spawned at `Z=1.5m` directly above the robot arm with a `<freejoint/>` so it falls freely under gravity and physically strikes the arm links.
+- **Result:** Objects exhibit correct gravity acceleration and cleanly collide with the arm and countertops without clipping or exploding. Inertial singularities (`mjMINVAL`) were successfully patched.
+- **Crash Note:** First attempt crashed because `mass` was set inside `<geom>` instead of `<inertial>`. Fix: always pair `<freejoint/>` bodies with explicit `<inertial>` tags. Documented in `mujoco_crash_postmortem.md`.
+
+**✅ 3. Gripper Actuation Test:**
+- **Gripper OPEN:**
+  ```bash
+  ros2 topic pub --once /fer_gripper_controller/commands std_msgs/msg/Float64MultiArray "{data: [0.04]}"
+  ```
+- **Gripper CLOSE:**
+  ```bash
+  ros2 topic pub --once /fer_gripper_controller/commands std_msgs/msg/Float64MultiArray "{data: [0.0]}"
+  ```
+- **Result:** Fingers visually spread open to 4cm and snapped shut. ✅
+
+**✅ 4. Individual Joint Tests (all 7 DOF verified one by one):**
+- **Joint 1 — Base rotation:**
+  ```bash
+  ros2 topic pub --once /fer_arm_controller/joint_trajectory trajectory_msgs/msg/JointTrajectory "{joint_names: ['fer_joint1','fer_joint2','fer_joint3','fer_joint4','fer_joint5','fer_joint6','fer_joint7'], points: [{positions: [1.5, 0.0, 0.0, -1.5, 0.0, 1.5, 0.0], time_from_start: {sec: 3}}]}"
+  ```
+- **Joint 2 — Shoulder forward:**
+  ```bash
+  ros2 topic pub --once /fer_arm_controller/joint_trajectory trajectory_msgs/msg/JointTrajectory "{joint_names: ['fer_joint1','fer_joint2','fer_joint3','fer_joint4','fer_joint5','fer_joint6','fer_joint7'], points: [{positions: [0.0, -1.5, 0.0, -1.5, 0.0, 1.5, 0.0], time_from_start: {sec: 3}}]}"
+  ```
+- **Joint 3 — Upper arm roll:**
+  ```bash
+  ros2 topic pub --once /fer_arm_controller/joint_trajectory trajectory_msgs/msg/JointTrajectory "{joint_names: ['fer_joint1','fer_joint2','fer_joint3','fer_joint4','fer_joint5','fer_joint6','fer_joint7'], points: [{positions: [0.0, 0.0, 1.5, -1.5, 0.0, 1.5, 0.0], time_from_start: {sec: 3}}]}"
+  ```
+- **Joint 4 — Elbow bend:**
+  ```bash
+  ros2 topic pub --once /fer_arm_controller/joint_trajectory trajectory_msgs/msg/JointTrajectory "{joint_names: ['fer_joint1','fer_joint2','fer_joint3','fer_joint4','fer_joint5','fer_joint6','fer_joint7'], points: [{positions: [0.0, 0.0, 0.0, -2.5, 0.0, 1.5, 0.0], time_from_start: {sec: 3}}]}"
+  ```
+- **Joint 5 — Forearm roll:**
+  ```bash
+  ros2 topic pub --once /fer_arm_controller/joint_trajectory trajectory_msgs/msg/JointTrajectory "{joint_names: ['fer_joint1','fer_joint2','fer_joint3','fer_joint4','fer_joint5','fer_joint6','fer_joint7'], points: [{positions: [0.0, 0.0, 0.0, -1.5, 1.5, 1.5, 0.0], time_from_start: {sec: 3}}]}"
+  ```
+- **Joint 6 — Wrist bend:**
+  ```bash
+  ros2 topic pub --once /fer_arm_controller/joint_trajectory trajectory_msgs/msg/JointTrajectory "{joint_names: ['fer_joint1','fer_joint2','fer_joint3','fer_joint4','fer_joint5','fer_joint6','fer_joint7'], points: [{positions: [0.0, 0.0, 0.0, -1.5, 0.0, 3.0, 0.0], time_from_start: {sec: 3}}]}"
+  ```
+- **Joint 7 — Wrist spin:**
+  ```bash
+  ros2 topic pub --once /fer_arm_controller/joint_trajectory trajectory_msgs/msg/JointTrajectory "{joint_names: ['fer_joint1','fer_joint2','fer_joint3','fer_joint4','fer_joint5','fer_joint6','fer_joint7'], points: [{positions: [0.0, 0.0, 0.0, -1.5, 0.0, 1.5, 2.0], time_from_start: {sec: 3}}]}"
+  ```
+- **Result:** All 7 joints moved independently and smoothly. ✅
+
+**✅ 5. Full Coordinated Reach Pose (all joints simultaneously):**
+  ```bash
+  ros2 topic pub --once /fer_arm_controller/joint_trajectory trajectory_msgs/msg/JointTrajectory "{joint_names: ['fer_joint1','fer_joint2','fer_joint3','fer_joint4','fer_joint5','fer_joint6','fer_joint7'], points: [{positions: [0.5, -0.5, 0.2, -2.0, 0.5, 1.8, 0.785], time_from_start: {sec: 3}}]}"
+  ```
+- **Result:** Arm transitioned smoothly to a realistic reach configuration targeting the countertop. ✅
+
+**✅ 6. Joint Limit Safety Test (joint1 commanded to 3.5 rad, limit = 2.8973 rad):**
+  ```bash
+  ros2 topic pub --once /fer_arm_controller/joint_trajectory trajectory_msgs/msg/JointTrajectory "{joint_names: ['fer_joint1','fer_joint2','fer_joint3','fer_joint4','fer_joint5','fer_joint6','fer_joint7'], points: [{positions: [3.5, 0.0, 0.0, -1.5, 0.0, 1.5, 0.0], time_from_start: {sec: 2}}]}"
+  ```
+- **Result:** MuJoCo hard-clamped joint1 at its physical limit of `2.8973 rad`. The over-commanded `3.5 rad` was mathematically blocked. Safety constraints confirmed. ✅
+
+---
+
+## Next Steps: Phase 3 (Motion Planning)
+With the underlying kinematics and environment completely verified up to standard, we are now ready to implement **MoveIt2** to programmatically generate inverse kinematics (IK) paths to these objects.
