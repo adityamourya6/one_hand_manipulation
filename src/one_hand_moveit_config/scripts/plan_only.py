@@ -65,9 +65,9 @@ class ReachObjectNode(Node):
         o_const.header.frame_id = 'world'
         o_const.link_name = 'fer_link8'
         o_const.orientation = target_pose.pose.orientation
-        o_const.absolute_x_axis_tolerance = 0.1
-        o_const.absolute_y_axis_tolerance = 0.1
-        o_const.absolute_z_axis_tolerance = 0.1
+        o_const.absolute_x_axis_tolerance = 3.14
+        o_const.absolute_y_axis_tolerance = 3.14
+        o_const.absolute_z_axis_tolerance = 3.14
         o_const.weight = 1.0
 
         constraint = Constraints()

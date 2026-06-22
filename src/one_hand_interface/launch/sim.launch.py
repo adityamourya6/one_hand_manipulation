@@ -1,12 +1,14 @@
 import os
 import launch
 from launch import LaunchDescription
-from launch.actions import DeclareLaunchArgument, OpaqueFunction
+from launch.actions import DeclareLaunchArgument, OpaqueFunction, IncludeLaunchDescription
+from launch.launch_description_sources import PythonLaunchDescriptionSource
 from launch.substitutions import Command, FindExecutable, LaunchConfiguration, PathJoinSubstitution
 from launch_ros.actions import Node
 from launch_ros.parameter_descriptions import ParameterValue, ParameterFile
 from launch_ros.substitutions import FindPackageShare
 from ament_index_python.packages import get_package_share_directory
+from moveit_configs_utils import MoveItConfigsBuilder
 
 def launch_setup(context, *args, **kwargs):
     pkg_share = FindPackageShare("one_hand_interface")
@@ -74,7 +76,24 @@ def launch_setup(context, *args, **kwargs):
             )
         )
 
+    # Include MoveIt move_group
+    moveit_config_share = get_package_share_directory("one_hand_moveit_config")
+    nodes.append(
+        IncludeLaunchDescription(
+            PythonLaunchDescriptionSource(
+                os.path.join(moveit_config_share, "launch", "move_group.launch.py")
+            ),
+            launch_arguments={'use_sim_time': 'true'}.items()
+        )
+    )
+
     rviz_config_file = PathJoinSubstitution([pkg_share, "rviz", "view_robot.rviz"])
+
+    moveit_config = (
+        MoveItConfigsBuilder("fer", package_name="one_hand_moveit_config")
+        .robot_description(file_path="config/fer.urdf.xacro")
+        .to_moveit_configs()
+    )
 
     # RViz node
     nodes.append(
@@ -84,6 +103,11 @@ def launch_setup(context, *args, **kwargs):
             name="rviz2",
             output="log",
             arguments=["-d", rviz_config_file],
+            parameters=[
+                moveit_config.robot_description_semantic,
+                moveit_config.robot_description_kinematics,
+                {"use_sim_time": True}
+            ],
             condition=launch.conditions.IfCondition(LaunchConfiguration("rviz")),
         )
     )
