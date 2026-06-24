@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="standalone_drill">
+
+  <xacro:include filename="$(find one_hand_interface)/urdf/schunk_tool_plate.xacro"/>
+
+  <!-- Mount point for the Schunk adapter plate -->
+  <link name="schunk_mount"/>
+
+  <joint name="mount_to_plate" type="fixed">
+    <parent link="schunk_mount"/>
+    <child link="drill_base_link_schunk_plate"/>
+    <origin xyz="0 0 -0.02" rpy="0 0 0"/>
+  </joint>
+
+  <!-- The base link (handle) of the Drill -->
+  <link name="drill_base_link">
+    <visual>
+      <origin xyz="0 0 0.05" rpy="0 0 0"/>
+      <geometry>
+        <!-- The handle of the drill -->
+        <cylinder radius="0.02" length="0.1"/>
+      </geometry>
+      <material name="yellow">
+        <color rgba="0.9 0.8 0.1 1.0"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0.05" rpy="0 0 0"/>
+      <geometry>
+        <cylinder radius="0.02" length="0.1"/>
+      </geometry>
+    </collision>
+    <inertial>
+      <mass value="1.5"/>
+      <origin xyz="0 0 0.05"/>
+      <inertia ixx="0.003" ixy="0" ixz="0" iyy="0.003" iyz="0" izz="0.003"/>
+    </inertial>
+  </link>
+
+  <!-- Generate the standard Schunk Adapter Plate connected to our base link -->
+  <xacro:schunk_tool_plate tool_base_link="drill_base_link"/>
+
+  <!-- The main body of the drill (motor housing) -->
+  <link name="drill_motor">
+    <visual>
+      <origin xyz="0.05 0 0" rpy="0 1.5708 0"/>
+      <geometry>
+        <cylinder radius="0.035" length="0.18"/>
+      </geometry>
+      <material name="yellow"/>
+    </visual>
+    <collision>
+      <origin xyz="0.05 0 0" rpy="0 1.5708 0"/>
+      <geometry>
+        <cylinder radius="0.035" length="0.18"/>
+      </geometry>
+    </collision>
+  </link>
+  <joint name="drill_base_to_motor" type="fixed">
+    <parent link="drill_base_link"/>
+    <child link="drill_motor"/>
+    <origin xyz="0 0 0.1" rpy="0 0 0"/>
+  </joint>
+
+  <!-- The drill bit -->
+  <link name="drill_bit">
+    <visual>
+      <origin xyz="0.05 0 0" rpy="0 1.5708 0"/>
+      <geometry>
+        <cylinder radius="0.005" length="0.1"/>
+      </geometry>
+      <material name="silver">
+        <color rgba="0.8 0.8 0.8 1.0"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0.05 0 0" rpy="0 1.5708 0"/>
+      <geometry>
+        <cylinder radius="0.005" length="0.1"/>
+      </geometry>
+    </collision>
+  </link>
+  <joint name="drill_motor_to_bit" type="fixed">
+    <parent link="drill_motor"/>
+    <child link="drill_bit"/>
+    <!-- Positioned at the end of the motor housing -->
+    <origin xyz="0.09 0 0" rpy="0 0 0"/>
+  </joint>
+
+</robot>

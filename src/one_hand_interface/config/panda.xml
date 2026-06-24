@@ -113,6 +113,9 @@
     <mesh file="assets/hand_4.obj"/>
     <mesh file="assets/finger_0.obj"/>
     <mesh file="assets/finger_1.obj"/>
+    
+    <!-- Custom Composite Male Adapter -->
+    <mesh name="franka_adapter_male" file="../urdf/external_tools/franka_adapter_male_final.obj"/>
   </asset>
 
   <worldbody>
@@ -209,35 +212,37 @@
                     <geom mesh="link7_c" class="collision"/>
                     <body name="hand" pos="0 0 0.107" quat="0.9238795 0 0 -0.3826834">
                       <inertial mass="0.73" pos="-0.01 0 0.03" diaginertia="0.001 0.0025 0.0017"/>
-                      <geom mesh="hand_0" material="off_white" class="visual"/>
-                      <geom mesh="hand_1" material="black" class="visual"/>
-                      <geom mesh="hand_2" material="black" class="visual"/>
-                      <geom mesh="hand_3" material="white" class="visual"/>
-                      <geom mesh="hand_4" material="off_white" class="visual"/>
-                      <geom mesh="hand_c" class="collision"/>
+                      <!-- NEW MALE ADAPTER -->
+                      <geom type="mesh" mesh="franka_adapter_male" material="black" contype="0" conaffinity="0" group="2"/>
+                      <geom type="cylinder" size="0.038 0.001" pos="0 0 0.019" material="black" contype="0" conaffinity="0" group="2"/>
+                      <geom type="box" size="0.03 0.001 0.01" pos="0 -0.0415 0.01" material="black" contype="0" conaffinity="0" group="2"/>
+                      <geom type="box" size="0.03 0.001 0.01" pos="0 0.0415 0.01" material="black" contype="0" conaffinity="0" group="2"/>
+                      <geom mesh="hand_c" class="collision" rgba="0 0 0 0"/>
+                      
+                      <!-- FINGERS MADE INVISIBLE -->
                       <body name="left_finger" pos="0 0 0.0584">
                         <inertial mass="0.015" pos="0 0 0" diaginertia="2.375e-6 2.375e-6 7.5e-7"/>
                         <joint name="fer_finger_joint1" class="finger"/>
-                        <geom mesh="finger_0" material="off_white" class="visual"/>
-                        <geom mesh="finger_1" material="black" class="visual"/>
-                        <geom mesh="finger_0" class="collision"/>
-                        <geom class="fingertip_pad_collision_1"/>
-                        <geom class="fingertip_pad_collision_2"/>
-                        <geom class="fingertip_pad_collision_3"/>
-                        <geom class="fingertip_pad_collision_4"/>
-                        <geom class="fingertip_pad_collision_5"/>
+                        <geom mesh="finger_0" rgba="0 0 0 0" class="visual"/>
+                        <geom mesh="finger_1" rgba="0 0 0 0" class="visual"/>
+                        <geom mesh="finger_0" class="collision" rgba="0 0 0 0"/>
+                        <geom class="fingertip_pad_collision_1" rgba="0 0 0 0"/>
+                        <geom class="fingertip_pad_collision_2" rgba="0 0 0 0"/>
+                        <geom class="fingertip_pad_collision_3" rgba="0 0 0 0"/>
+                        <geom class="fingertip_pad_collision_4" rgba="0 0 0 0"/>
+                        <geom class="fingertip_pad_collision_5" rgba="0 0 0 0"/>
                       </body>
                       <body name="right_finger" pos="0 0 0.0584" quat="0 0 0 1">
                         <inertial mass="0.015" pos="0 0 0" diaginertia="2.375e-6 2.375e-6 7.5e-7"/>
                         <joint name="fer_finger_joint2" class="finger"/>
-                        <geom mesh="finger_0" material="off_white" class="visual"/>
-                        <geom mesh="finger_1" material="black" class="visual"/>
-                        <geom mesh="finger_0" class="collision"/>
-                        <geom class="fingertip_pad_collision_1"/>
-                        <geom class="fingertip_pad_collision_2"/>
-                        <geom class="fingertip_pad_collision_3"/>
-                        <geom class="fingertip_pad_collision_4"/>
-                        <geom class="fingertip_pad_collision_5"/>
+                        <geom mesh="finger_0" rgba="0 0 0 0" class="visual"/>
+                        <geom mesh="finger_1" rgba="0 0 0 0" class="visual"/>
+                        <geom mesh="finger_0" class="collision" rgba="0 0 0 0"/>
+                        <geom class="fingertip_pad_collision_1" rgba="0 0 0 0"/>
+                        <geom class="fingertip_pad_collision_2" rgba="0 0 0 0"/>
+                        <geom class="fingertip_pad_collision_3" rgba="0 0 0 0"/>
+                        <geom class="fingertip_pad_collision_4" rgba="0 0 0 0"/>
+                        <geom class="fingertip_pad_collision_5" rgba="0 0 0 0"/>
                       </body>
                     </body>
                   </body>

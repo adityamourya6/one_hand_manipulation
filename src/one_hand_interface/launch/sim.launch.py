@@ -14,9 +14,13 @@ def launch_setup(context, *args, **kwargs):
     pkg_share = FindPackageShare("one_hand_interface")
     pkg_share_dir = get_package_share_directory("one_hand_interface")
 
-    # Select scene file based on collision_test argument
+    # Select scene file based on launch arguments
     collision_test = LaunchConfiguration("collision_test").perform(context)
-    if collision_test.lower() in ("true", "1", "yes"):
+    adapter_test = LaunchConfiguration("adapter_test").perform(context)
+    
+    if adapter_test.lower() in ("true", "1", "yes"):
+        scene_file = os.path.join(pkg_share_dir, "config", "kitchen_scene_adapter_test.xml")
+    elif collision_test.lower() in ("true", "1", "yes"):
         scene_file = os.path.join(pkg_share_dir, "config", "kitchen_scene_collision_test.xml")
     else:
         scene_file = os.path.join(pkg_share_dir, "config", "kitchen_scene.xml")
@@ -66,6 +70,11 @@ def launch_setup(context, *args, **kwargs):
 
     # Controller spawners
     controllers_to_spawn = ["joint_state_broadcaster", "fer_arm_controller", "fer_gripper_controller"]
+    
+    # Do not spawn the gripper controller if we are running the bare adapter test
+    if adapter_test.lower() in ("true", "1", "yes"):
+        controllers_to_spawn.remove("fer_gripper_controller")
+        
     for controller in controllers_to_spawn:
         nodes.append(
             Node(
@@ -123,6 +132,10 @@ def generate_launch_description():
             DeclareLaunchArgument(
                 "collision_test", default_value="false",
                 description="Launch with a 10kg falling box above the robot arm to verify rigid body collisions."
+            ),
+            DeclareLaunchArgument(
+                "adapter_test", default_value="false",
+                description="Launch an isolated testing environment with only the bare robot arm and the new adapter."
             ),
             OpaqueFunction(function=launch_setup),
         ]

@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="standalone_shadow_hand">
+
+  <xacro:include filename="$(find one_hand_interface)/urdf/schunk_tool_plate.xacro"/>
+
+  <!-- Mount point for the Schunk adapter plate -->
+  <link name="schunk_mount"/>
+
+  <joint name="mount_to_plate" type="fixed">
+    <parent link="schunk_mount"/>
+    <child link="shadow_base_link_schunk_plate"/>
+    <origin xyz="0 0 -0.02" rpy="0 0 0"/>
+  </joint>
+
+  <!-- The base link of the Shadow Hand -->
+  <link name="shadow_base_link">
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <!-- Using the mounting plate OBJ from the Menagerie -->
+        <mesh filename="package://one_hand_interface/urdf/external_tools/shadow_hand/assets/mounting_plate.obj"/>
+      </geometry>
+      <material name="black">
+        <color rgba="0.1 0.1 0.1 1.0"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <!-- Simplify collision to a cylinder to make MoveIt planning faster -->
+        <cylinder radius="0.06" length="0.1"/>
+      </geometry>
+    </collision>
+    <inertial>
+      <mass value="2.0"/>
+      <origin xyz="0 0 0"/>
+      <inertia ixx="0.005" ixy="0" ixz="0" iyy="0.005" iyz="0" izz="0.005"/>
+    </inertial>
+  </link>
+
+  <!-- Generate the standard Schunk Adapter Plate connected to our base link -->
+  <xacro:schunk_tool_plate tool_base_link="shadow_base_link"/>
+
+  <!-- Bounding box for fingers/palm for collision checking in MoveIt -->
+  <link name="shadow_fingers_bounding_box">
+    <collision>
+      <origin xyz="0 0 0.15" rpy="0 0 0"/>
+      <geometry>
+        <box size="0.18 0.18 0.2"/>
+      </geometry>
+    </collision>
+  </link>
+  <joint name="shadow_base_to_fingers" type="fixed">
+    <parent link="shadow_base_link"/>
+    <child link="shadow_fingers_bounding_box"/>
+    <origin xyz="0 0 0" rpy="0 0 0"/>
+  </joint>
+
+</robot>

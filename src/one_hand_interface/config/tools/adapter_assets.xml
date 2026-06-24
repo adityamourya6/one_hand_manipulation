@@ -1,0 +1,6 @@
+<mujoco>
+  <asset>
+    <!-- Custom Composite Male Adapter Mesh -->
+    <mesh name="franka_adapter_male" file="/home/mourya/one_hand_ws/src/one_hand_interface/urdf/external_tools/franka_adapter_male_final.obj"/>
+  </asset>
+</mujoco>

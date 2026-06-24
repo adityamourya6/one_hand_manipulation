@@ -1,0 +1,139 @@
+<?xml version='1.0' encoding='utf-8'?>
+<mujoco>
+
+  <default>
+    <default class="franka_hand">
+      <material specular="0.5" shininess="0.25"/>
+      <default class="franka_finger">
+        <joint axis="0 1 0" type="slide" range="0 0.04" armature="0.1" damping="1"/>
+      </default>
+      <default class="franka_fingertip_pad_collision_1">
+        <geom type="box" size="0.0085 0.004 0.0085" pos="0 0.0055 0.0445"/>
+      </default>
+      <default class="franka_fingertip_pad_collision_2">
+        <geom type="box" size="0.003 0.002 0.003" pos="0.0055 0.002 0.05"/>
+      </default>
+      <default class="franka_fingertip_pad_collision_3">
+        <geom type="box" size="0.003 0.002 0.003" pos="-0.0055 0.002 0.05"/>
+      </default>
+      <default class="franka_fingertip_pad_collision_4">
+        <geom type="box" size="0.003 0.002 0.0035" pos="0.0055 0.002 0.0395"/>
+      </default>
+      <default class="franka_fingertip_pad_collision_5">
+        <geom type="box" size="0.003 0.002 0.0035" pos="-0.0055 0.002 0.0395"/>
+      </default>
+    </default>
+  </default>
+
+  <asset>
+
+    <!-- Franka hand palm meshes (absolute paths, no meshdir dependency) -->
+    <material name="franka_white"     rgba="1 1 1 1"/>
+    <material name="franka_off_white" rgba="0.901961 0.921569 0.929412 1"/>
+    <material name="franka_black"     rgba="0.25 0.25 0.25 1"/>
+    <mesh name="franka_hand_c"  file="/home/mourya/one_hand_ws/src/mujoco_menagerie/franka_emika_panda/assets/hand.stl"/>
+    <mesh name="franka_hand_0"  file="/home/mourya/one_hand_ws/src/mujoco_menagerie/franka_emika_panda/assets/hand_0.obj"/>
+    <mesh name="franka_hand_1"  file="/home/mourya/one_hand_ws/src/mujoco_menagerie/franka_emika_panda/assets/hand_1.obj"/>
+    <mesh name="franka_hand_2"  file="/home/mourya/one_hand_ws/src/mujoco_menagerie/franka_emika_panda/assets/hand_2.obj"/>
+    <mesh name="franka_hand_3"  file="/home/mourya/one_hand_ws/src/mujoco_menagerie/franka_emika_panda/assets/hand_3.obj"/>
+    <mesh name="franka_hand_4"  file="/home/mourya/one_hand_ws/src/mujoco_menagerie/franka_emika_panda/assets/hand_4.obj"/>
+
+    <mesh name="franka_finger_0" file="/home/mourya/one_hand_ws/src/mujoco_menagerie/franka_emika_panda/assets/finger_0.obj"/>
+    <mesh name="franka_finger_1" file="/home/mourya/one_hand_ws/src/mujoco_menagerie/franka_emika_panda/assets/finger_1.obj"/>
+    
+    <!-- Custom Composite Male Adapter -->
+    <mesh name="franka_adapter_male" file="/home/mourya/one_hand_ws/src/one_hand_interface/urdf/external_tools/franka_adapter_male_final.obj"/>
+  </asset>
+
+  <worldbody>
+    <!-- FRANKA HAND TOOL ASSEMBLY (world Z = up)
+         TOP:    robot arm connects to Franka palm flange (at body origin of adapter_top)
+         MIDDLE: slotted spool hangs on U-rack tines
+         BOTTOM: Franka fingers (the actual end effector)                         -->
+    <body name="tool_physical_franka_hand" pos="-0.59 -1.2 0.533" quat="0.9238795 0 0 0.3826834">
+      <freejoint/>
+      <inertial mass="1.5" pos="0 0 -0.05" diaginertia="0.01 0.01 0.005"/>
+
+      <!-- ROBOT SIDE: Franka palm base (flange plate at body origin = top of assembly) -->
+      <body name="franka_hand_adapter_top" pos="0 0 0.107" quat="0.9238795 0 0 -0.3826834">
+        <inertial mass="0.73" pos="-0.01 0 0.03" diaginertia="0.001 0.0025 0.0017"/>
+        <!-- VISUAL: Flange face with slots facing UP -->
+        <!-- By wrapping in a body and NOT specifying pos on geoms, MuJoCo uses its internal mesh_pos to reconstruct the relative offsets correctly -->
+        <!-- VISUAL: Franka Hand Base (MALE slotted pattern) -->
+        <body name="adapter_male_base" pos="0 0 0">
+            <geom type="mesh" mesh="franka_adapter_male" material="franka_black" contype="0" conaffinity="0" group="2"/>
+            <geom type="cylinder" size="0.038 0.001" pos="0 0 0.019" material="franka_black" contype="0" conaffinity="0" group="2"/>
+            <geom type="box" size="0.03 0.001 0.01" pos="0 -0.0415 0.01" material="franka_black" contype="0" conaffinity="0" group="2"/>
+            <geom type="box" size="0.03 0.001 0.01" pos="0 0.0415 0.01" material="franka_black" contype="0" conaffinity="0" group="2"/>
+        </body>
+        
+        <!-- VISUAL: White cylinder to connect flange to the spool (MADE INVISIBLE) -->
+        <geom type="cylinder" size="0.043" fromto="0 0 -0.06  0 0 -0.055" rgba="0 0 0 0" contype="0" conaffinity="0" group="2"/>
+        
+        <!-- COLLISION: Make it completely invisible (rgba="0 0 0 0") so viewers don't render it opaque by mistake -->
+        <geom type="cylinder" size="0.044" fromto="0 0 -0.06 0 0 0" group="3" contype="1" conaffinity="1" rgba="0 0 0 0"/>
+        
+        <!-- ======================= -->
+        <!-- SPOOL AND FINGERS (MADE INVISIBLE FOR ADAPTER INSPECTION) -->
+        <!-- ======================= -->
+        <body name="franka_hand_spool" pos="0 0 -0.06">
+          <geom type="box" size="0.04 0.04 0.005" pos="0 0  0.01" rgba="0 0 0 0" contype="1" conaffinity="1"/>
+          <geom type="box" size="0.04 0.025 0.008" pos="0 0  0"    rgba="0 0 0 0" contype="1" conaffinity="1"/>
+          <geom type="box" size="0.04 0.04 0.005" pos="0 0 -0.01" rgba="0 0 0 0" contype="1" conaffinity="1"/>
+          <body name="franka_hand_fingers" pos="0 0 -0.025" childclass="franka_hand">
+            <body name="franka_left_finger" pos="0 0 0.0584">
+              <inertial mass="0.015" pos="0 0 0" diaginertia="2.375e-6 2.375e-6 7.5e-7"/>
+              <joint name="finger_joint1" class="franka_finger"/>
+              <geom type="mesh" mesh="franka_finger_0" rgba="0 0 0 0"
+                    contype="0" conaffinity="0" group="2"/>
+              <geom type="mesh" mesh="franka_finger_1" rgba="0 0 0 0"
+                    contype="0" conaffinity="0" group="2"/>
+              <geom type="mesh" mesh="franka_finger_0" group="3" rgba="0 0 0 0"/>
+              <geom class="franka_fingertip_pad_collision_1" rgba="0 0 0 0"/>
+              <geom class="franka_fingertip_pad_collision_2" rgba="0 0 0 0"/>
+              <geom class="franka_fingertip_pad_collision_3" rgba="0 0 0 0"/>
+              <geom class="franka_fingertip_pad_collision_4" rgba="0 0 0 0"/>
+              <geom class="franka_fingertip_pad_collision_5" rgba="0 0 0 0"/>
+            </body>
+            <body name="franka_right_finger" pos="0 0 0.0584" quat="0 0 0 1">
+              <inertial mass="0.015" pos="0 0 0" diaginertia="2.375e-6 2.375e-6 7.5e-7"/>
+              <joint name="finger_joint2" class="franka_finger"/>
+              <geom type="mesh" mesh="franka_finger_0" rgba="0 0 0 0"
+                    contype="0" conaffinity="0" group="2"/>
+              <geom type="mesh" mesh="franka_finger_1" rgba="0 0 0 0"
+                    contype="0" conaffinity="0" group="2"/>
+              <geom type="mesh" mesh="franka_finger_0" group="3" rgba="0 0 0 0"/>
+              <geom class="franka_fingertip_pad_collision_1" rgba="0 0 0 0"/>
+              <geom class="franka_fingertip_pad_collision_2" rgba="0 0 0 0"/>
+              <geom class="franka_fingertip_pad_collision_3" rgba="0 0 0 0"/>
+              <geom class="franka_fingertip_pad_collision_4" rgba="0 0 0 0"/>
+              <geom class="franka_fingertip_pad_collision_5" rgba="0 0 0 0"/>
+            </body>
+          </body>
+        </body>
+      </body>
+    </body>
+  </worldbody>
+
+  <contact>
+    <exclude body1="franka_hand_adapter_top" body2="franka_left_finger"/>
+    <exclude body1="franka_hand_adapter_top" body2="franka_right_finger"/>
+  </contact>
+
+  <tendon>
+    <fixed name="franka_split">
+      <joint joint="finger_joint1" coef="0.5"/>
+      <joint joint="finger_joint2" coef="0.5"/>
+    </fixed>
+  </tendon>
+
+  <equality>
+    <joint joint1="finger_joint1" joint2="finger_joint2" solimp="0.95 0.99 0.001" solref="0.005 1"/>
+  </equality>
+
+  <actuator>
+    <general class="franka_hand" name="franka_actuator8" tendon="franka_split"
+      forcerange="-100 100" ctrlrange="0 255"
+      gainprm="0.01568627451 0 0" biasprm="0 -100 -10"/>
+  </actuator>
+</mujoco>

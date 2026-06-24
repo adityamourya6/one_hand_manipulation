@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="standalone_robotiq_2f85">
+
+  <xacro:include filename="$(find one_hand_interface)/urdf/schunk_tool_plate.xacro"/>
+
+  <!-- Mount point for the Schunk adapter plate -->
+  <link name="schunk_mount"/>
+
+  <joint name="mount_to_plate" type="fixed">
+    <parent link="schunk_mount"/>
+    <child link="robotiq_base_link_schunk_plate"/>
+    <origin xyz="0 0 -0.02" rpy="0 0 0"/>
+  </joint>
+
+  <!-- The base link of the Robotiq Gripper -->
+  <link name="robotiq_base_link">
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <!-- Using the base mount STL from the Menagerie -->
+        <mesh filename="package://one_hand_interface/urdf/external_tools/robotiq_2f85/assets/base_mount.stl"/>
+      </geometry>
+      <material name="black">
+        <color rgba="0.1 0.1 0.1 1.0"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <!-- Simplify collision to a cylinder to make MoveIt planning faster -->
+        <cylinder radius="0.04" length="0.05"/>
+      </geometry>
+    </collision>
+    <inertial>
+      <mass value="0.9"/>
+      <origin xyz="0 0 0"/>
+      <inertia ixx="0.001" ixy="0" ixz="0" iyy="0.001" iyz="0" izz="0.001"/>
+    </inertial>
+  </link>
+
+  <!-- Generate the standard Schunk Adapter Plate connected to our base link -->
+  <xacro:schunk_tool_plate tool_base_link="robotiq_base_link"/>
+
+  <!-- Note: This is a simplified MoveIt URDF used ONLY for collision/kinematics.
+       The actual detailed dynamics and actuation of the gripper fingers 
+       are loaded natively in the MuJoCo scene via MJCF! -->
+       
+  <link name="robotiq_fingers_bounding_box">
+    <collision>
+      <!-- A bounding box approximating the space the fingers take up -->
+      <origin xyz="0 0 0.1" rpy="0 0 0"/>
+      <geometry>
+        <box size="0.15 0.05 0.1"/>
+      </geometry>
+    </collision>
+  </link>
+  <joint name="robotiq_base_to_fingers" type="fixed">
+    <parent link="robotiq_base_link"/>
+    <child link="robotiq_fingers_bounding_box"/>
+    <origin xyz="0 0 0" rpy="0 0 0"/>
+  </joint>
+
+</robot>
