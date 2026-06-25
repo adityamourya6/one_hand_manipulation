@@ -110,7 +110,7 @@
       <inertial mass="2.5" pos="0 0 -0.12" diaginertia="0.02 0.02 0.01"/>
 
       <!-- ROBOT SIDE: Franka palm base -->
-      <body name="shadow_dex_ee_adapter_top" pos="0 0 0.107" quat="0.9238795 0 0 -0.3826834">
+      <body name="shadow_dex_ee_adapter_top">
         <inertial mass="0.73" pos="-0.01 0 0.03" diaginertia="0.001 0.0025 0.0017"/>
         <!-- VISUAL: Flange face with slots facing UP -->
         <!-- By wrapping in a body and NOT specifying pos on geoms, MuJoCo uses its internal mesh_pos to reconstruct the relative offsets correctly -->
